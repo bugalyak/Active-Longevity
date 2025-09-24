@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Филиалы Центра</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+    }
+    #mapContainer {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      background: url("map.jpg") no-repeat center/contain;
+    }
+    .marker {
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      background: transparent;
+      cursor: pointer;
+      transform: translate(-50%, -50%);
+    }
+
+    /* оверлей для видео и галереи */
+    #videoOverlay, #galleryOverlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.95);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      flex-direction: column;
+    }
+
+    /* YouTube iframe — теперь 100% */
+    #branchVideo {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: black;
+    }
+
+    /* фото на весь экран */
+    #galleryOverlay img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      background: black;
+    }
+
+    #closeBtn, #closeGallery {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      padding: 10px 20px;
+      background: red;
+      color: white;
+      border: none;
+      font-size: 18px;
+      cursor: pointer;
+      z-index: 1100;
+    }
+  </style>
+</head>
+<body>
+  <div id="mapContainer">
+    <div class="marker" style="top:29%; left:40%;" data-video="https://www.youtube.com/watch?v=Xz3Xo1R881I"></div>
+    <div class="marker" style="top:31%; left:50%;" data-video="https://www.youtube.com/watch?v=KRekDyNKrn8"></div>
+    <div class="marker" style="top:66%; left:38%;" data-video="https://www.youtube.com/watch?v=ID3"></div>
+    <div class="marker" style="top:65%; left:48%;" data-video="https://www.youtube.com/watch?v=O7ynM7yjzl8"></div>
+    <div class="marker" style="top:48%; left:58%;" data-video="https://www.youtube.com/watch?v=g3dI1wyVBMg"></div>
+    <div class="marker" style="top:56%; left:66%;" data-gallery="gallery"></div>
+  </div>
+
+  <!-- оверлей для видео -->
+  <div id="videoOverlay">
+    <iframe id="branchVideo" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    <button id="closeBtn">Закрыть</button>
+  </div>
+
+  <!-- оверлей для галереи -->
+  <div id="galleryOverlay">
+    <img id="galleryImage" src="images/image1.jpeg" alt="gallery">
+    <button id="closeGallery">Закрыть</button>
+  </div>
+
+  <script>
+    const images = [
+      "images/image1.jpeg", "images/image2.jpeg", "images/image3.jpeg",
+      "images/image4.jpeg", "images/image5.jpeg", "images/image6.jpeg",
+      "images/image7.jpeg", "images/image8.jpeg", "images/image9.jpeg",
+      "images/image10.jpeg"
+    ];
+    let currentImage = 0;
+
+    document.querySelectorAll(".marker").forEach(marker => {
+      marker.addEventListener("click", () => {
+        const videoSrc = marker.dataset.video;
+        const gallery = marker.dataset.gallery;
+
+        if (videoSrc) {
+          const overlay = document.getElementById("videoOverlay");
+          const iframe = document.getElementById("branchVideo");
+
+          // преобразуем ссылку в формат embed
+          const videoId = videoSrc.split("v=")[1];
+          iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+
+          overlay.style.display = "flex";
+        }
+        if (gallery) {
+          const overlay = document.getElementById("galleryOverlay");
+          overlay.style.display = "flex";
+          document.getElementById("galleryImage").src = images[currentImage];
+        }
+      });
+    });
+
+    // закрыть видео
+    document.getElementById("closeBtn").addEventListener("click", () => {
+      const overlay = document.getElementById("videoOverlay");
+      const iframe = document.getElementById("branchVideo");
+
+      iframe.src = ""; // сбрасываем, чтобы остановить видео
+      overlay.style.display = "none";
+    });
+
+    // закрыть галерею
+    document.getElementById("closeGallery").addEventListener("click", () => {
+      document.getElementById("galleryOverlay").style.display = "none";
+    });
+
+    // переключение галереи по клику на картинку
+    document.getElementById("galleryImage").addEventListener("click", () => {
+      currentImage = (currentImage + 1) % images.length;
+      document.getElementById("galleryImage").src = images[currentImage];
+    });
+  </script>
+</body>
+</html>
